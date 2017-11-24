@@ -49,9 +49,26 @@
 ;
 ; Your goal is to write the score method.
 
+
 (defun score (dice)
-  ; You need to write this method
-)
+  (if (null dice)
+      0
+      (let ((counter (make-hash-table))
+            (score 0))
+        (dolist (n dice)
+          (incf (gethash n counter 0)))
+        (dolist (n '(1 2 3 4 5 6))
+          (let ((count (gethash n counter 0)))
+            (when (>= count 3)
+              (incf score
+                    (case n (1 1000)
+                            (5 500)
+                            ((2 3 4 6) (* 100 n)))))
+            (when (find n '(1 5))
+              (incf score
+                    (* (mod count 3)
+                       (if (= n 1) 100 50))))))
+        score)))
 
 (define-test test-score-of-an-empty-list-is-zero
     (assert-equal 0 (score nil)))
